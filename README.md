@@ -68,15 +68,14 @@ Install [DiffSynth-Studio](https://github.com/modelscope/DiffSynth-Studio):
 ```shell
 git clone https://github.com/KwaiVGI/ReCamMaster.git
 cd ReCamMaster
-pip install -e .
+uv sync
 ```
 
 Step 2: Download the pretrained checkpoints
 1. Download the pre-trained Wan2.1 models
 
 ```shell
-cd ReCamMaster
-python download_wan2.1.py
+uv run download_wan2.1.py
 ```
 2. Download the pre-trained ReCamMaster checkpoint
 
@@ -84,7 +83,7 @@ Please download from [huggingface](https://huggingface.co/KwaiVGI/ReCamMaster-Wa
 
 Step 3: Test the example videos
 ```shell
-python inference_recammaster.py --cam_type 1
+uv run inference_recammaster.py --cam_type 1
 ```
 
 Step 4: Test your own videos
@@ -92,7 +91,7 @@ Step 4: Test your own videos
 If you want to test your own videos, you need to prepare your test data following the structure of the ```example_test_data``` folder. This includes N mp4 videos, each with at least 81 frames, and a ```metadata.csv``` file that stores their paths and corresponding captions. You can refer to the [Prompt Extension section](https://github.com/Wan-Video/Wan2.1?tab=readme-ov-file#2-using-prompt-extension) in Wan2.1 for guidance on preparing video captions. 
 
 ```shell
-python inference_recammaster.py --cam_type 1 --dataset_path path/to/your/data
+uv run inference_recammaster.py --cam_type 1 --dataset_path path/to/your/data
 ```
 
 We provide several preset camera types, as shown in the table below. Additionally, you can generate new trajectories for testing.
@@ -115,7 +114,7 @@ We provide several preset camera types, as shown in the table below. Additionall
 Step 1: Set up the environment
 
 ```shell
-pip install lightning pandas websockets
+uv sync
 ```
 
 Step 2: Prepare the training dataset
@@ -125,7 +124,7 @@ Step 2: Prepare the training dataset
 2. Extract VAE features
 
 ```shell
-CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" python train_recammaster.py   --task data_process   --dataset_path path/to/the/MultiCamVideo/Dataset   --output_path ./models   --text_encoder_path "models/Wan-AI/Wan2.1-T2V-1.3B/models_t5_umt5-xxl-enc-bf16.pth"   --vae_path "models/Wan-AI/Wan2.1-T2V-1.3B/Wan2.1_VAE.pth"   --tiled   --num_frames 81   --height 480   --width 832 --dataloader_num_workers 2
+CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" uv run train_recammaster.py   --task data_process   --dataset_path path/to/the/MultiCamVideo/Dataset   --output_path ./models   --text_encoder_path "models/Wan-AI/Wan2.1-T2V-1.3B/models_t5_umt5-xxl-enc-bf16.pth"   --vae_path "models/Wan-AI/Wan2.1-T2V-1.3B/Wan2.1_VAE.pth"   --tiled   --num_frames 81   --height 480   --width 832 --dataloader_num_workers 2
 ```
 
 3. Generate Captions for Each Video
@@ -134,14 +133,14 @@ You can use video caption tools like [LLaVA](https://github.com/haotian-liu/LLaV
 
 Step 3: Training
 ```shell
-CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" python train_recammaster.py   --task train  --dataset_path recam_train_data   --output_path ./models/train   --dit_path "models/Wan-AI/Wan2.1-T2V-1.3B/diffusion_pytorch_model.safetensors"   --steps_per_epoch 8000   --max_epochs 100   --learning_rate 1e-4   --accumulate_grad_batches 1   --use_gradient_checkpointing  --dataloader_num_workers 4
+CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" uv run train_recammaster.py   --task train  --dataset_path recam_train_data   --output_path ./models/train   --dit_path "models/Wan-AI/Wan2.1-T2V-1.3B/diffusion_pytorch_model.safetensors"   --steps_per_epoch 8000   --max_epochs 100   --learning_rate 1e-4   --accumulate_grad_batches 1   --use_gradient_checkpointing  --dataloader_num_workers 4
 ```
 We do not explore the optimal set of hyper-parameters and train with a batch size of 1 on each GPU. You may achieve better model performance by adjusting hyper-parameters such as the learning rate and increasing the batch size.
 
 Step 4: Test the model
 
 ```shell
-python inference_recammaster.py --cam_type 1 --ckpt_path path/to/the/checkpoint
+uv run inference_recammaster.py --cam_type 1 --ckpt_path path/to/the/checkpoint
 ```
 
 ## 📷 Dataset: MultiCamVideo Dataset
